@@ -2,14 +2,15 @@ package com.example.blog.rest.api.service;
 
 import com.example.blog.rest.api.entity.Comment;
 import com.example.blog.rest.api.entity.Post;
+import com.example.blog.rest.api.exception.BlogAPIException;
+import com.example.blog.rest.api.exception.ResourceNotFoundException;
 import com.example.blog.rest.api.repository.CommentRepository;
 import com.example.blog.rest.api.repository.PostRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class CommentServiceImp implements CommentService{
@@ -22,7 +23,7 @@ public class CommentServiceImp implements CommentService{
     public Comment createComment(Long postId, Comment comment) {
         Post foundPost = postRepository
                 .findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post with id not found: " + postId));
+                .orElseThrow(() -> new ResourceNotFoundException("posts", "postId", postId));
 
         comment.setPost(foundPost);
 
@@ -38,14 +39,14 @@ public class CommentServiceImp implements CommentService{
     public Comment getCommentById(Long postId, Long commentId) {
         Post foundPost = postRepository
                 .findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post with id not found: " + postId));
+                .orElseThrow(() -> new ResourceNotFoundException("posts", "postId", postId));
 
         Comment foundComment = commentRepository
                 .findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment with id not found: " + commentId));
+                .orElseThrow(() -> new ResourceNotFoundException("comments", "commentId", commentId));
 
-        if(foundComment.getPost().getId().equals(foundPost.getId())) { // if post does not match comment
-            throw new RuntimeException("Comment does not belong the post");
+        if(!foundComment.getPost().getId().equals(foundPost.getId())) { // if post does not match comment
+            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Comment does not belong to post.");
         }
 
         return foundComment;
@@ -55,14 +56,14 @@ public class CommentServiceImp implements CommentService{
     public Comment updateComment(Long postId, Long commentId, Comment comment) {
         Post foundPost = postRepository
                 .findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post with id not found: " + postId));
+                .orElseThrow(() -> new ResourceNotFoundException("posts", "postId", postId));
 
         Comment foundComment = commentRepository
                 .findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment with id not found: " + commentId));
+                .orElseThrow(() -> new ResourceNotFoundException("comments", "commentId", commentId));
 
         if(foundComment.getPost().getId().equals(foundPost.getId())) { // if post does not match comment
-            throw new RuntimeException("Comment does not belong the post");
+            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Comment does not belong to post.");
         }
 
         foundComment.setName(comment.getName());
@@ -82,11 +83,15 @@ public class CommentServiceImp implements CommentService{
     public void deleteComment(Long postId, Long commentId) {
         Post foundPost = postRepository
                 .findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post with id not found: " + postId));
+                .orElseThrow(() -> new ResourceNotFoundException("posts", "postId", postId));
 
-        Comment comment = commentRepository
+        Comment foundComment = commentRepository
                 .findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment with id not found: " + commentId));
+                .orElseThrow(() -> new ResourceNotFoundException("comments", "commentId", commentId));
+
+        if(foundComment.getPost().getId().equals(foundPost.getId())) { // if post does not match comment
+            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Comment does not belong to post.");
+        }
 
         // remove comment from post comments
         postRepository.save(foundPost);

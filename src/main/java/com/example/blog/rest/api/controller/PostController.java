@@ -2,6 +2,7 @@ package com.example.blog.rest.api.controller;
 
 import com.example.blog.rest.api.entity.Post;
 import com.example.blog.rest.api.service.PostService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class PostController {
     private PostService postService;
 
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody Post post) {
+    public ResponseEntity<Post> createPost(@Valid @RequestBody Post post) {
         Post data = postService.createPost(post);
         return new ResponseEntity<>(data, HttpStatus.CREATED);
     }
@@ -35,7 +36,8 @@ public class PostController {
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<Post> updatePost(@PathVariable("postId") Long postid, @RequestBody Post post) {
+    public ResponseEntity<Post> updatePost(@PathVariable("postId") Long postid,
+                                           @Valid @RequestBody Post post) {
         Post data = postService.updatePost(postid, post);
         return new ResponseEntity<>(data, HttpStatus.OK);
     }

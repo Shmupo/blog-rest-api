@@ -2,6 +2,7 @@ package com.example.blog.rest.api.controller;
 
 import com.example.blog.rest.api.entity.Comment;
 import com.example.blog.rest.api.service.CommentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class CommentController {
 
     @PostMapping("{postId}/comments")
     public ResponseEntity<Comment> createComment(@PathVariable("postId") Long postId,
-                                                 @RequestBody Comment comment) {
+                                                 @Valid @RequestBody Comment comment) {
         Comment data = commentService.createComment(postId, comment);
         return new ResponseEntity<>(data, HttpStatus.CREATED);
     }
@@ -44,7 +45,7 @@ public class CommentController {
     @PutMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Comment> updateComment(@PathVariable("postId") Long postId,
                                                  @PathVariable("commentId") Long commentId,
-                                                 @RequestBody Comment comment) {
+                                                 @Valid @RequestBody Comment comment) {
         Comment data = commentService.updateComment(postId, commentId, comment);
         return new ResponseEntity<>(data, HttpStatus.OK);
     }

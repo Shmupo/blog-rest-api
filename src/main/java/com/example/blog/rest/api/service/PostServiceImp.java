@@ -1,6 +1,7 @@
 package com.example.blog.rest.api.service;
 
 import com.example.blog.rest.api.entity.Post;
+import com.example.blog.rest.api.exception.ResourceNotFoundException;
 import com.example.blog.rest.api.repository.CommentRepository;
 import com.example.blog.rest.api.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +31,14 @@ public class PostServiceImp implements PostService {
     public Post getPostById(Long postId) {
         return postRepository
                 .findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found with id: " + postId));
+                .orElseThrow(() -> new ResourceNotFoundException("posts", "postId", postId));
     }
 
     @Override
     public Post updatePost(Long postId, Post post) {
         Post foundPost = postRepository
                 .findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found with id: " + postId));
+                .orElseThrow(() -> new ResourceNotFoundException("posts", "postId", postId));
 
         foundPost.setTitle(post.getTitle());
         foundPost.setContent(post.getContent());
@@ -50,7 +51,7 @@ public class PostServiceImp implements PostService {
     public void deletePost(Long postId) {
         Post post = postRepository
                 .findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found with id: " + postId));
+                .orElseThrow(() -> new ResourceNotFoundException("posts", "postId", postId));
 
         postRepository.deleteById(postId);
     }

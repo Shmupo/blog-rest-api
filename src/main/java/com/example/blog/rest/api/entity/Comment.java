@@ -3,6 +3,8 @@ package com.example.blog.rest.api.entity;
 import com.example.blog.rest.api.repository.PostRepository;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,9 +19,19 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @NotEmpty(message = "Name cannot be empty or null.")
+    @Size(min = 3, message = "Name should be at least 3 characters long.")
     private String name;
+
+    @NotEmpty(message = "Email cannot be empty or null.")
+    @Size(min = 10, message = "Email should be at least 10 characters long.")
     private String email;
+
+    @NotEmpty(message = "Body cannot be empty or null.")
+    @Size(min = 10, message = "Body should be at least 10 characters long.")
     private String body;
+
     @ManyToOne(
             fetch = FetchType.LAZY // only fetch the comment, not the post with it
     )
@@ -77,6 +89,7 @@ public class Comment {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", body='" + body + '\'' +
+                ", post=" + post +
                 '}';
     }
 }

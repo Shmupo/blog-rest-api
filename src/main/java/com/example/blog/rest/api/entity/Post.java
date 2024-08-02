@@ -1,6 +1,8 @@
 package com.example.blog.rest.api.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,12 +27,18 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // set to long to allow this to be auto-incremented
 
+    @NotEmpty(message = "Title cannot be empty or null.")
+    @Size(min = 4, message = "Title should be at least 4 characters long.")
     @Column(name="title", nullable = false)
     private String title;
 
+    @NotEmpty(message = "Description cannot be empty or null.")
+    @Size(min = 10, message = "Description should be at least 10 characters long.")
     @Column(name = "description", nullable = false)
     private String description;
 
+    @NotEmpty(message = "Content cannot be empty or null.")
+    @Size(min = 10, message = "Content should be at least 10 characters long.")
     @Column(name = "content", nullable = false)
     private String content;
 
