@@ -1,8 +1,10 @@
 package com.example.blog.rest.api.entity;
 
+import com.example.blog.rest.api.repository.PostRepository;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Data
 @NoArgsConstructor
@@ -66,5 +68,15 @@ public class Comment {
 
     public void setPost(Post post) {
         this.post = post;
+    }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", body='" + body + '\'' +
+                '}';
     }
 }

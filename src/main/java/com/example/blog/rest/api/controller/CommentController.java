@@ -9,39 +9,50 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/api/comments")
+@RequestMapping("/api/posts/")
 @RestController
 public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    @PostMapping
-    public ResponseEntity<Comment> createComment(@RequestBody Comment comment) {
-        Comment data = commentService.createComment(comment);
+    @PostMapping("{postId}/comments")
+    public ResponseEntity<Comment> createComment(@PathVariable("postId") Long postId,
+                                                 @RequestBody Comment comment) {
+        Comment data = commentService.createComment(postId, comment);
         return new ResponseEntity<>(data, HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Comment>> getAllComments() {
-        List<Comment> data = commentService.getAllComments();
+    @GetMapping("{postId}/comments")
+    public ResponseEntity<List<Comment>> getAllComments(@PathVariable("postId") Long postId) {
+        List<Comment> data = commentService.getCommentsByPostId(postId);
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Comment> getCommentById(@PathVariable("id") Long commentId) {
-        Comment data = commentService.getCommentById(commentId);
+    @GetMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<Comment> getCommentById(@PathVariable("postId") Long postId,
+                                                  @PathVariable("commentId") Long commentId) {
+        Comment data = commentService.getCommentById(postId, commentId);
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Comment> updateComment(@PathVariable("id") Long commentId, @RequestBody Comment comment) {
-        Comment data = commentService.updateComment(commentId, comment);
+    @GetMapping("/{postId}/posts")
+    public ResponseEntity<List<Comment>> getCommentsByPostId(@PathVariable("postId") Long postId) {
+        List<Comment> data = commentService.getCommentsByPostId(postId);
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public HttpStatus deleteComment(@PathVariable("id") Long commentId) {
-        commentService.deleteComment(commentId);
+    @PutMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<Comment> updateComment(@PathVariable("postId") Long postId,
+                                                 @PathVariable("commentId") Long commentId,
+                                                 @RequestBody Comment comment) {
+        Comment data = commentService.updateComment(postId, commentId, comment);
+        return new ResponseEntity<>(data, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{postId}/comments/{commentId}")
+    public HttpStatus deleteComment(@PathVariable("postId") Long postId,
+                                    @PathVariable("commentId") Long commentId) {
+        commentService.deleteComment(postId, commentId);
         return HttpStatus.OK;
     }
 

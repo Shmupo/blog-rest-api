@@ -37,9 +37,9 @@ public class Post {
     @OneToMany(
             mappedBy = "post",
             cascade = CascadeType.ALL, // for deletion
-            orphanRemoval = true // auto-delete if post deletes
+            orphanRemoval = true, // auto-delete if post deletes
+            fetch = FetchType.LAZY
     )
-    private Set<Comment> comments = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -73,11 +73,13 @@ public class Post {
         this.content = content;
     }
 
-    public Set<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(Set<Comment> comments) {
-        this.comments = comments;
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", content='" + content + '\'' +
+                '}';
     }
 }

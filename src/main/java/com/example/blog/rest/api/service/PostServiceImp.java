@@ -1,6 +1,7 @@
 package com.example.blog.rest.api.service;
 
 import com.example.blog.rest.api.entity.Post;
+import com.example.blog.rest.api.repository.CommentRepository;
 import com.example.blog.rest.api.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,9 @@ import java.util.List;
 public class PostServiceImp implements PostService {
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Override
     public Post createPost(Post post) {
@@ -39,12 +43,6 @@ public class PostServiceImp implements PostService {
         foundPost.setContent(post.getContent());
         foundPost.setDescription(post.getDescription());
 
-        // Update comments collection
-        foundPost.getComments().clear();
-        if (post.getComments() != null) {
-            foundPost.getComments().addAll(post.getComments());
-        }
-
         return postRepository.save(foundPost);
     }
 
@@ -53,6 +51,7 @@ public class PostServiceImp implements PostService {
         Post post = postRepository
                 .findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found with id: " + postId));
+
         postRepository.deleteById(postId);
     }
 }

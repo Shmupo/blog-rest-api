@@ -4,10 +4,12 @@ import com.example.blog.rest.api.entity.Comment;
 import com.example.blog.rest.api.entity.Post;
 import com.example.blog.rest.api.repository.CommentRepository;
 import com.example.blog.rest.api.repository.PostRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class CommentServiceImp implements CommentService{
@@ -17,7 +19,13 @@ public class CommentServiceImp implements CommentService{
     private PostRepository postRepository;
 
     @Override
-    public Comment createComment(Comment comment) {
+    public Comment createComment(Long postId, Comment comment) {
+        Post foundPost = postRepository
+                .findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post with id not found: " + postId));
+
+        comment.setPost(foundPost);
+
         return commentRepository.save(comment);
     }
 
@@ -27,36 +35,62 @@ public class CommentServiceImp implements CommentService{
     }
 
     @Override
-    public Comment getCommentById(Long commentId) {
-        return commentRepository
-                .findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment with id not found: " + commentId));
-    }
+    public Comment getCommentById(Long postId, Long commentId) {
+        Post foundPost = postRepository
+                .findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post with id not found: " + postId));
 
-    @Override
-    public Comment updateComment(Long commentId, Comment comment) {
         Comment foundComment = commentRepository
                 .findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment with id not found: " + commentId));
+
+        if(foundComment.getPost().getId().equals(foundPost.getId())) { // if post does not match comment
+            throw new RuntimeException("Comment does not belong the post");
+        }
+
+        return foundComment;
+    }
+
+    @Override
+    public Comment updateComment(Long postId, Long commentId, Comment comment) {
+        Post foundPost = postRepository
+                .findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post with id not found: " + postId));
+
+        Comment foundComment = commentRepository
+                .findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment with id not found: " + commentId));
+
+        if(foundComment.getPost().getId().equals(foundPost.getId())) { // if post does not match comment
+            throw new RuntimeException("Comment does not belong the post");
+        }
+
         foundComment.setName(comment.getName());
         foundComment.setEmail(comment.getEmail());
         foundComment.setBody(comment.getBody());
-
-        if (comment.getPost() != null) {
-            Post post = postRepository
-                    .findById(comment.getPost().getId())
-                    .orElseThrow(() -> new RuntimeException("Post with id not found: " + comment.getPost().getId()));
-            foundComment.setPost(post);
-        }
+        foundComment.setPost(foundPost);
 
         return commentRepository.save(foundComment);
     }
 
     @Override
-    public void deleteComment(Long commentId) {
+    public List<Comment> getCommentsByPostId(Long postId) {
+        return commentRepository.findByPostId(postId);
+    }
+
+    @Override
+    public void deleteComment(Long postId, Long commentId) {
+        Post foundPost = postRepository
+                .findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post with id not found: " + postId));
+
         Comment comment = commentRepository
                 .findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment with id not found: " + commentId));
+
+        // remove comment from post comments
+        postRepository.save(foundPost);
+
         commentRepository.deleteById(commentId);
     }
 }
