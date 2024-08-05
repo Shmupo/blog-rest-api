@@ -1,4 +1,4 @@
-package com.example.blog.rest.api.service;
+package com.example.blog.rest.api.service.Imp;
 
 import com.example.blog.rest.api.entity.Comment;
 import com.example.blog.rest.api.entity.Post;
@@ -6,6 +6,7 @@ import com.example.blog.rest.api.exception.BlogAPIException;
 import com.example.blog.rest.api.exception.ResourceNotFoundException;
 import com.example.blog.rest.api.repository.CommentRepository;
 import com.example.blog.rest.api.repository.PostRepository;
+import com.example.blog.rest.api.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CommentServiceImp implements CommentService{
+public class CommentServiceImp implements CommentService {
     @Autowired
     private CommentRepository commentRepository;
     @Autowired

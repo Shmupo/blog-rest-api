@@ -56,6 +56,4 @@ public class CommentController {
         commentService.deleteComment(postId, commentId);
         return HttpStatus.OK;
     }
-
-
 }
