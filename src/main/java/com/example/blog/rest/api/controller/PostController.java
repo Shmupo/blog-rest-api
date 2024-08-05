@@ -1,7 +1,9 @@
 package com.example.blog.rest.api.controller;
 
 import com.example.blog.rest.api.entity.Post;
+import com.example.blog.rest.api.payload.PostResponse;
 import com.example.blog.rest.api.service.PostService;
+import com.example.blog.rest.api.utils.AppConstants;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,9 +25,16 @@ public class PostController {
         return new ResponseEntity<>(data, HttpStatus.CREATED);
     }
 
+    // http://localhost:8080/api/posts?pageNo=0&pageSize=5&SortBy=id&sortDir=desc
+
     @GetMapping
-    public ResponseEntity<List<Post>> getAllPosts() {
-        List<Post> data = postService.getAllPosts();
+    public ResponseEntity<PostResponse> getAllPosts(
+            @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value="sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value="sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIR, required = false) String sortDir) {
+        //List<Post> data = postService.getAllPosts();
+        PostResponse data = postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
         return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
