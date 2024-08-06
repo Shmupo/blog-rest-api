@@ -1,5 +1,6 @@
 package com.example.blog.rest.api.service.Imp;
 
+import com.example.blog.rest.api.Security.JWTTokenProvider;
 import com.example.blog.rest.api.entity.Role;
 import com.example.blog.rest.api.entity.User;
 import com.example.blog.rest.api.payload.LoginDto;
@@ -33,13 +34,17 @@ public class AuthServiceImp implements AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private JWTTokenProvider jwtTokenProvider;
+
     @Override
     public String login(LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getUsernameOrEmail(), loginDto.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return "User logged in successfully.";
+        String token = jwtTokenProvider.generateToken(authentication);
+        return token;
     }
 
     @Transactional
